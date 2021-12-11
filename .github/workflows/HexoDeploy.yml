@@ -14,7 +14,7 @@ on:
 env:
   GIT_USER: yyq
   GIT_EMAIL: 1157599015@qq.com
-  THEME_REPO: Super-YYQ/hyyqblog
+  THEME_REPO: Super-YYQ/yyqblog
   THEME_BRANCH: master
   DEPLOY_REPO: Super-YYQ/Super-YYQ.github.io
   DEPLOY_BRANCH: main
