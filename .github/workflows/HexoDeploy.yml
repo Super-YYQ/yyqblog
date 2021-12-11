@@ -46,11 +46,11 @@ jobs:
           hexo generate
           
       - name: Deploy hexo blog
-      # 将编译后的博客文件推送到指定仓库
-      run: |
-        cd ./public && git init && git add .
-        git config user.name "yyq"
-        git config user.email "1157599015@qq.com"
-        git add .
-        git commit -m "GitHub Actions Auto Builder at $(date +'%Y-%m-%d %H:%M:%S')"
-        git push --force --quiet "https://${{ secrets.HEXO_DEPLOY_PRI }}@$DEPLOY_REPO" main:main
+         # 将编译后的博客文件推送到指定仓库
+        run: |
+          cd ./public && git init && git add .
+          git config user.name "yyq"
+          git config user.email "1157599015@qq.com"
+          git add .
+          git commit -m "GitHub Actions Auto Builder at $(date +'%Y-%m-%d %H:%M:%S')"
+          git push --force --quiet "https://${{ secrets.HEXO_DEPLOY_PRI }}@$DEPLOY_REPO" main:main
