@@ -29,43 +29,31 @@ jobs:
         node_version: [12.x]
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          ref: master
 
-    - name: 1. git checkout...
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
 
-      uses: actions/checkout@v1
+      - name: Setup Hexo
+        env:
+          ACTION_DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_PRI }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.email "1157599015@qq.com"
+          git config --global user.name "yyq"
+          npm install hexo-cli -g
+          npm install
 
-    - name: 2. setup nodejs...
-
-      uses: actions/setup-node@v1
-
-    - name: 3. install hexo...
-
-      run: |
-        npm install hexo-cli -g
-        npm i -S hexo-prism-plugin -g
-        npm install hexo-generator-search --save -g
-        npm i hexo-permalink-pinyin  -g
-        npm i --save hexo-wordcount -g
-        npm install hexo-filter-github-emojis  -g
-        npm install hexo-generator-feed  -g
-        npm install
-
-    - name: 4. hexo generate public files...
-
-      run: |
-        hexo clean
-        hexo g
-    
-    # 提交到我们的存放静态资源的仓库
-
-    - name: Build and Deploy
-
-      uses: yyq/1157599015@qq.com
-      env:
-        PERSONAL_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        # The repository the action should deploy to.
-        PUBLISH_REPOSITORY: Super-YYQ/Super-YYQ.github.io
-        # The branch the action should deploy to.
-        BRANCH: main
-        # The folder the action should deploy.
-        PUBLISH_DIR: ./public
+      - name: Deploy
+        run: |
+          hexo clean
+          hexo deploy
