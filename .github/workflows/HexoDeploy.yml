@@ -36,7 +36,7 @@ jobs:
       # 安装依赖
       - name: Install dependencies
         run: |
-          npm install
+          npm install hexo-cli -g
 
       # 从之前设置的 secret 获取部署私钥
       - name: Set up environment
