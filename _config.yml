@@ -106,3 +106,5 @@ deploy:
   type: git
   repo: git@github.com:Super-YYQ/Super-YYQ.github.io.git
   branch: main
+  name: yyq
+  email: 1157599015@qq.com
