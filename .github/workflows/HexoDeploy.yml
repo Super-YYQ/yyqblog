@@ -8,38 +8,62 @@ on:
   push:
     branches: master
 
-
+env:
+  GIT_USER: yyq
+  GIT_EMAIL: 1157599015@qq.com
+  THEME_REPO: Super-YYQ/yyqblog
+  THEME_BRANCH: master
+  DEPLOY_REPO: Super-YYQ/Super-YYQ.github.io
+  DEPLOY_BRANCH: main
+    
 jobs:
   build:
+    name: Build on node ${{ matrix.node_version }} and ${{ matrix.os }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x]
+        os: [ubuntu-latest]
+        node_version: [12.x]
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Checkout theme repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.THEME_REPO }}
+          ref: ${{ env.THEME_BRANCH }}
+          path: themes/hexo-theme-matery
+
+      - name: Checkout deploy repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          ref: ${{ env.DEPLOY_BRANCH }}
+          path: .deploy_git
+
+      - name: Use Node.js ${{ matrix.node_version }}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node_version }}
 
       - name: Configuration environment
         env:
           HEXO_DEPLOY_PRI: ${{secrets.HEXO_DEPLOY_PRI}}
         run: |
+          sudo timedatectl set-timezone "Asia/Shanghai"
           mkdir -p ~/.ssh/
           echo "$HEXO_DEPLOY_PRI" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
-          git config --global user.name "yyq"
-          git config --global user.email "1157599015@qq.com"
+          git config --global user.name $GIT_USER
+          git config --global user.email $GIT_EMAIL
 
       - name: Install dependencies
         run: |
-          npm i -g hexo-cli
-          npm i
+          npm install
 
       - name: Deploy hexo
         run: |
-          hexo g -d
+          npm run deploy
