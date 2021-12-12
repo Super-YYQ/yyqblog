@@ -7,50 +7,40 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: master
-
-env:
-  POST_ASSET_IMAGE_CDN: true
     
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # 获取博客源码和主题
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Checkout theme repo
-        uses: actions/checkout@v2
-        with:
-          repository: Super-YYQ/yyqblog
-          ref: master
-          path: themes/hexo-theme-matery
-
-      # 这里用的是 Node.js 14.x
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '14'
-
-      # 安装依赖
-      - name: Install dependencies
-        run: |
-          npm install hexo-cli -g
-
-      # 从之前设置的 secret 获取部署私钥
-      - name: Set up environment
-        env:
-          DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_PRI }}
-        run: |
-          sudo timedatectl set-timezone "Asia/Shanghai"
-          mkdir -p ~/.ssh
-          echo "$DEPLOY_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-      # 生成并部署
-      - name: Deploy
-        run: |
-          hexo clean
-          npx hexo deploy --generate
+      - name: Checkout Repository master branch 
+        uses: actions/checkout@master 
+    
+      - name: Setup Node.js 12.x 
+        uses: actions/setup-node@master 
+        with: 
+          node-version: "12.x" 
+          
+      - name: Setup Hexo Dependencies 
+        run: | 
+          npm install hexo-cli -g npm install 
+          
+      - name: Setup Deploy Private Key 
+        env: 
+          HEXO_DEPLOY_PRIVATE_KEY: ${{ secrets.HEXO_DEPLOY_PRIVATE_KEY }} 
+        run: | 
+          mkdir -p ~/.ssh/ 
+          echo "$HEXO_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_rsa 
+          chmod 600 ~/.ssh/id_rsa 
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 
+          
+      - name: Setup Git Infomation 
+        run: | 
+          git config --global user.name 'Super-YYQ' 
+          git config --global user.email 'yanyaqi085616@gmail.com' 
+          
+      - name: Deploy Hexo 
+        run: | 
+          hexo clean 
+          hexo generate 
+          hexo deploy
